@@ -114,6 +114,8 @@ def app():
 
     st.sidebar.title("🦙🔒 LlamaLock App")
     
+    get_openai_api_key()
+    
     data_directory = st.sidebar.text_input("Data Directory", "./data")
     index_set = load_data(data_directory)
 
