@@ -79,7 +79,7 @@ cache = {}
 
 def get_index_set(data_directory):
     if "index_set" not in cache:
-        cache["index_set"] = load_data(data_directory)
+        cache["index_set"] = create_index_set_resource(data_directory)
     return cache["index_set"]
 
 def app():
