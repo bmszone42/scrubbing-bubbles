@@ -13,7 +13,7 @@ def get_openai_api_key():
 
     return openai_api_key
 
-@st.cache_data(allow_output_mutation=True)
+@st.cache_data()
 def load_data(data_directory):
     UnstructuredReader = download_loader("UnstructuredReader", refresh_cache=True)
     loader = UnstructuredReader()
