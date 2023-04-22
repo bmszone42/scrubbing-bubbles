@@ -84,8 +84,6 @@ def global_query(index_set, risk_query_str):
 
 def app():
     st.set_page_config(
-        page_title="🦙🔒🎯 L
-
     page_title="🦙🔒🎯 LlamaLock: Target Your Search with Llama-like Accuracy!",
     page_icon="🦙",
     layout="wide",
