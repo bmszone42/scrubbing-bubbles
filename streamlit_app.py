@@ -14,6 +14,7 @@ def get_openai_api_key():
     return openai_api_key
 
 def load_data(data_directory):
+    # Load the 10-K data into memory
     UnstructuredReader = download_loader("UnstructuredReader", refresh_cache=True)
     loader = UnstructuredReader()
     doc_set = {}
@@ -33,7 +34,7 @@ def load_data(data_directory):
         cur_index = GPTSimpleVectorIndex.from_documents(doc_set[year])
         index_set[year] = cur_index
 
-    return list(doc_set.items()), list(index_set.items()), all_docs
+    return index_set
 
 # Create a function that creates the resource
 def create_index_set_resource(data_directory):
