@@ -37,8 +37,8 @@ def load_data(data_directory):
     return index_set
 
 # Create a function that creates the resource
-#def create_index_set_resource(data_directory):
-def create_index_set_resource(data_directory, arg2=None, arg3=None):
+def create_index_set_resource(data_directory):
+#def create_index_set_resource(data_directory, arg2=None, arg3=None):
     return load_data(data_directory)
 
 def load_graph(data_directory):
@@ -125,7 +125,9 @@ def app():
         # Use st.cache_resource to cache the resource
         data_directory = st.sidebar.text_input("Data Directory", "./data")
         #index_set = st.cache_resource("index_set", create_index_set_resource, data_directory)
-        index_set = st.cache_resource("index_set", create_index_set_resource, data_directory, None, None)
+        #index_set = st.cache_resource("index_set", create_index_set_resource, data_directory, None, None)
+        index_set = st.cache_resource("index_set", create_index_set_resource, data_directory)
+
 
 
     query_types = ["Risk Factors", "Significant Acquisitions"]
