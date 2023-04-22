@@ -50,8 +50,8 @@ def risk_factors_query(index_set, year):
     
 def composable_graph_query(index_set, risk_query_str):
     years = [2022, 2021, 2020, 2019]
-    graph = ComposableGraph()
-    
+    graph = ComposableGraph(index_struct=index_set[year], docstore=doc_set[year])
+   
     for year in years:
         graph.add_index(index_set[year], index_struct_type="dict")
         
@@ -78,10 +78,19 @@ def composable_graph_query(index_set, risk_query_str):
 
 def global_query(index_set, risk_query_str):
     years = [2022, 2021, 2020, 2019]
-    st.write("Response for all years:")
+
+    # Combine documents from all years
+    combined_docs = []
     for year in years:
-        st.write(f"Response for year {year}:")
-        query_results(index_set, year, risk_query_str)
+        combined_docs.extend(index_set[year].docstore)
+
+    # Create a combined index
+    combined_index = GPTSimpleVectorIndex.from_documents(combined_docs)
+
+    # Query the combined index
+    st.write("Response for all years combined:")
+    query_results(combined_index, None, risk_query_str)
+
 
 cache = {}
 
