@@ -51,7 +51,7 @@ def load_graph(data_directory):
 
 def query_results(index_set, year, query_str):
     response = index_set[year].query(query_str, similarity_top_k=3)
-    for r in response.documents:
+    for r in response:
         st.write(r.text)
 
 def composable_graph_query(data_directory, risk_query_str):
