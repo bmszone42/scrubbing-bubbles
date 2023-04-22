@@ -36,6 +36,55 @@ def load_data(data_directory):
 
     return index_set
 
+def load_graph(data_directory):
+    years = [2019, 2020, 2021, 2022]
+    summary_texts = [f"UBER 10-k Filing for {year} fiscal year" for year in years]
+    llm_predictor = LLMPredictor(llm=OpenAI(temperature=0, max_tokens=512))
+    service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor)
+    index_set = load_data(data_directory)
+    graph = ComposableGraph.from_indices(GPTListIndex, [index_set[year] for year in years], summary_texts, service_context=service_context)
+    graph.save_to_disk('10k_graph.json')
+    graph = ComposableGraph.load_from_disk('10k_graph.json', service_context=service_context)
+    return graph
+
+def risk_factors_query(index_set, year):
+    query_str = "What are some of the biggest risk factors in each year?"
+    response = index_set[year].query(query_str, similarity_top_k=3)
+    for r in response:
+        st.write(r.text)
+
+def composable_graph_query(data_directory, risk_query_str):
+    graph = load_graph(data_directory)
+    query_configs = [
+        {
+            "index_struct_type": "dict",
+            "query_mode": "default",
+            "query_kwargs": {
+                "similarity_top_k": 1,
+                # "include_summary": True
+            }
+        },
+        {
+            "index_struct_type": "list",
+            "query_mode": "default",
+            "query_kwargs": {
+                "response_mode": "tree_summarize",
+            }
+        },
+    ]
+    response_summary = graph.query(risk_query_str, query_configs=query_configs)
+    st.write(response_summary)
+    st.write(response_summary.get_formatted_sources())
+
+def global_query(index_set, risk_query_str):
+    years = [2022, 2021, 2020, 2019]
+    st.write("Response for all years:")
+    for year in years:
+        response = index_set[year].query(risk_query_str, similarity_top_k=4)
+        st.write(f"Response for year {year}:")
+        for r in response:
+            st.write(r.text)
+
 def app():
     st.set_page_config(
     page_title="🦙🔒🎯 LlamaLock: Target Your Search with Llama-like Accuracy!",
@@ -53,7 +102,6 @@ def app():
         color: green !important;
         animation: bounce 2s infinite;
     }
-
     @keyframes bounce {
         0% { transform: translateY(0); }
         50% { transform: translateY(-10px); }
@@ -95,46 +143,16 @@ def app():
     graph = ComposableGraph.from_indices(GPTListIndex, [index_set[year] for year in years], summary_texts, service_context=service_context)
     graph.save_to_disk('10k_graph.json')
     graph = ComposableGraph.load_from_disk('10k_graph.json', service_context=service_context)
-    risk_query_str = (
-        "Describe the current risk factors. If the year is provided in the information, "
-        "provide that as well. If the context contains risk factors for multiple years, "
-        "explicitly provide the following:\n"
-        "- A description of the risk factors for each year\n"
-        "- A summary of how these risk factors are changing across years"
-    )
-    query_configs = [
-        {
-            "index_struct_type": "dict",
-            "query_mode": "default",
-            "query_kwargs": {
-                "similarity_top_k": 1,
-                # "include_summary": True
-        }
-    },
-    {
-            "index_struct_type": "list",
-            "query_mode": "default",
-            "query_kwargs": {
-                "response_mode": "tree_summarize",
-        }
-    },
-]
-response_summary = graph.query(risk_query_str, query_configs=query_configs)
-st.write(response_summary)
-st.write(response_summary.get_formatted_sources())
+    query_configs = get_query_configs()
+    response_summary = graph.query(RISK_QUERY_STR, query_configs=query_configs)
+    st.write(response_summary)
+    st.write(response_summary.get_formatted_sources())
 
-st.sidebar.markdown("---")
+    st.sidebar.markdown("---")
 
-st.sidebar.title("Global Query")
-response = index_set[2022].query(risk_query_str, similarity_top_k=4)
-st.write("Response for year 2022:")
-for r in response:
-    st.write(r.text)
+    st.sidebar.title("Global Query")
+    global_query(index_set, RISK_QUERY_STR)
 
-response = global_index.query(risk_query_str, similarity_top_k=4)
-st.write("Response for all years:")
-for r in response:
-    st.write(r.text)
-    
-if name == "main":
+if __name__ == "__main__":
     app()
+
