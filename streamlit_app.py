@@ -145,25 +145,25 @@ def app():
         data_directory = st.sidebar.text_input("Data Directory", "./data")
         index_set = get_index_set(data_directory)
 
-    years = [2022, 2021, 2020, 2019]
-    year = st.sidebar.selectbox("Year", years)
+        years = [2022, 2021, 2020, 2019]
+        year = st.sidebar.selectbox("Year", years)
 
-    st.header("Risk Factors Query")
-    risk_factors_query(index_set, year)
+        st.header("Risk Factors Query")
+        risk_factors_query(index_set, year)
 
-    st.header("Composable Graph Query")
-    query_str = st.text_input("Composable graph query string:", "What are some of the biggest risk factors in each year?")
-    if st.button("Execute Composable Graph Query"):
-        composable_graph_query(data_directory, query_str)
+        st.header("Composable Graph Query")
+        query_str = st.text_input("Composable graph query string:", "What are some of the biggest risk factors in each year?")
+        if st.button("Execute Composable Graph Query"):
+            composable_graph_query(data_directory, query_str)
 
-    st.header("Global Query")
-    query_str = st.text_input("Global query string:", "What are some of the biggest risk factors in each year?")
-    if st.button("Execute Global Query"):
-        global_query(index_set, query_str)
+        st.header("Global Query")
+        query_str = st.text_input("Global query string:", "What are some of the biggest risk factors in each year?")
+        if st.button("Execute Global Query"):
+            global_query(index_set, query_str)
 
-    # Set number of output tokens
-    llm_predictor = LLMPredictor(llm=OpenAI(temperature=0, max_tokens=512))
-    service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor)
+        # Set number of output tokens
+        llm_predictor = LLMPredictor(llm=OpenAI(temperature=0, max_tokens=512))
+        service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor)
 
 
 if __name__ == "__main__":
