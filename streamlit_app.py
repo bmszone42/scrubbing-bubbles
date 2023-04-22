@@ -114,32 +114,32 @@ def app():
     openai_api_key = get_openai_api_key()
 
     if openai_api_key:
-    data_directory = st.sidebar.text_input("Data Directory", "./data")
-    index_set = st.cache_resource("index_set", create_index_set_resource, data_directory)
+        data_directory = st.sidebar.text_input("Data Directory", "./data")
+        index_set = st.cache_resource("index_set", create_index_set_resource, data_directory)
 
-query_types = ["Risk Factors", "Significant Acquisitions"]
-query_type = st.sidebar.selectbox("Query Type", query_types)
+    query_types = ["Risk Factors", "Significant Acquisitions"]
+    query_type = st.sidebar.selectbox("Query Type", query_types)
 
-years = [2022, 2021, 2020, 2019]
-year = st.sidebar.selectbox("Year", years)
+    years = [2022, 2021, 2020, 2019]
+    year = st.sidebar.selectbox("Year", years)
 
-if query_type == "Risk Factors":
-    query_str = "What are some of the biggest risk factors in each year?"
-elif query_type == "Significant Acquisitions":
-    query_str = "What were some of the significant acquisitions?"
+    if query_type == "Risk Factors":
+        query_str = "What are some of the biggest risk factors in each year?"
+    elif query_type == "Significant Acquisitions":
+        query_str = "What were some of the significant acquisitions?"
 
-query_results(index_set, year, query_str)
+    query_results(index_set, year, query_str)
 
-st.sidebar.markdown("---")
+    st.sidebar.markdown("---")
 
-st.sidebar.title("ComposableGraph Query")
-risk_query_str = "What are some of the biggest risk factors in each year?"
-composable_graph_query(data_directory, risk_query_str)
+    st.sidebar.title("ComposableGraph Query")
+    risk_query_str = "What are some of the biggest risk factors in each year?"
+    composable_graph_query(data_directory, risk_query_str)
 
-st.sidebar.markdown("---")
+    st.sidebar.markdown("---")
 
-st.sidebar.title("Global Query")
-global_query(index_set, risk_query_str)
+    st.sidebar.title("Global Query")
+    global_query(index_set, risk_query_str)
 
 if __name__ == "__main__":
     app()
