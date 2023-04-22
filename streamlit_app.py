@@ -1,5 +1,5 @@
 import os
-from llama_index import download_loader, GPTSimpleVectorIndex, GPTListIndex, LLMPredictor, ServiceContext, ComposableGraph
+from llama_index import download_loader, GPTSimpleVectorIndex, GPTListIndex, LLMPredictor, ServiceContext, ComposableGraph, OpenAI
 from pathlib import Path
 import streamlit as st
 
@@ -26,9 +26,14 @@ def create_index_set_resource(data_directory):
         doc_set[year] = year_docs
         all_docs.extend(year_docs)
 
+        # create index and save to disk
+        cur_index = GPTSimpleVectorIndex.from_documents(year_docs)
+        cur_index.save_to_disk(f"index_{year}.json")
+
+    # create index set from saved indices
     index_set = {}
     for year in years:
-        cur_index = GPTSimpleVectorIndex.from_documents(doc_set[year])
+        cur_index = GPTSimpleVectorIndex.load_from_disk(f"index_{year}.json")
         index_set[year] = cur_index
 
     return index_set
