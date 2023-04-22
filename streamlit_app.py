@@ -34,7 +34,7 @@ def load_data(data_directory):
 
     return index_set
 
-@st.cache(show_spinner=False)
+@st.cache(show_spinner=False, allow_output_mutation=True)
 def create_index_set_resource(data_directory):
     return load_data(data_directory)
 
