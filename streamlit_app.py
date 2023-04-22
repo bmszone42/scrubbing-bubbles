@@ -35,7 +35,8 @@ def load_data(data_directory):
         cur_index = GPTSimpleVectorIndex.from_documents(doc_set[year])
         index_set[year] = cur_index
 
-    return index_set
+    return list(doc_set.items()), list(index_set.items()), all_docs
+
 
 def load_graph(data_directory):
     years = [2019, 2020, 2021, 2022]
