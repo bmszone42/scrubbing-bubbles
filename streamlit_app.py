@@ -2,6 +2,7 @@ import os
 from llama_index import download_loader, GPTSimpleVectorIndex, GPTListIndex, LLMPredictor, ServiceContext, ComposableGraph
 from pathlib import Path
 import streamlit as st
+from langchain import OpenAI
 
 def get_openai_api_key():
     openai_api_key = st.sidebar.text_input("OpenAI API Key")
@@ -167,7 +168,8 @@ def app():
             global_query(index_set, query_str)
 
         # Set number of output tokens
-        llm_predictor = LLMPredictor(llm=OpenAI(temperature=0, max_tokens=512))
+        #llm_predictor = LLMPredictor(llm=OpenAI(temperature=0, max_tokens=512))
+        llm_predictor = LLMPredictor(llm=OpenAI(temperature=0, max_tokens=512, model_name="text-davinci-003"))
         service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor)
 
 
