@@ -2,7 +2,6 @@ import os
 from llama_index import download_loader, GPTSimpleVectorIndex, GPTListIndex, LLMPredictor, ServiceContext, ComposableGraph
 from pathlib import Path
 import streamlit as st
-from langchain import OpenAI
 
 def get_openai_api_key():
     openai_api_key = st.sidebar.text_input("OpenAI API Key")
@@ -33,21 +32,29 @@ def create_index_set_resource(data_directory):
         index_set[year] = cur_index
 
     return index_set
-
-def risk_factors_query(index_set, year):
-    if index_set:
-        query_results(index_set, year, "risk factors")
-    else:
-        st.warning("Please enter your OpenAI API key in the sidebar to use LlamaIndex.")
-
         
 def query_results(index_set, year, query_str):
     response = index_set[year].query(query_str, similarity_top_k=3)
-    for r in response:
-        st.write(r.text)
+    st.write(response)
+    
+def risk_factors_query(index_set, year):
+    risk_query_str = (
+        "Describe the current risk factors. If the year is provided in the information, "
+        "provide that as well. If the context contains risk factors for multiple years, "
+        "explicitly provide the following:\n"
+        "- A description of the risk factors for each year\n"
+        "- A summary of how these risk factors are changing across years"
+    )
+    query_results(index_set, year, risk_query_str)
 
-def composable_graph_query(data_directory, risk_query_str):
-    graph = load_graph(data_directory)
+    
+def composable_graph_query(index_set, risk_query_str):
+    years = [2022, 2021, 2020, 2019]
+    graph = ComposableGraph()
+    
+    for year in years:
+        graph.add_index(index_set[year], index_struct_type="dict")
+        
     query_configs = [
         {
             "index_struct_type": "dict",
@@ -67,6 +74,7 @@ def composable_graph_query(data_directory, risk_query_str):
     response_summary = graph.query(risk_query_str, query_configs=query_configs)
     st.write(response_summary)
     st.write(response_summary.get_formatted_sources())
+
 
 def global_query(index_set, risk_query_str):
     years = [2022, 2021, 2020, 2019]
@@ -131,7 +139,7 @@ def app():
     st.header("Global Query")
     query_str = st.text_input("Global query string:", "What are some of the biggest risk factors in each year?")
     if st.button("Execute Global Query"):
-        global_query(index_set, query_str)
+        query_results(index_set, year, query_str)
 
 if __name__ == "__main__":
     app()
