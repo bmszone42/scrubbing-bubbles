@@ -13,8 +13,6 @@ def get_openai_api_key():
 
     return openai_api_key
 
-
-@st.cache_data()
 def load_data(data_directory):
     UnstructuredReader = download_loader("UnstructuredReader", refresh_cache=True)
     loader = UnstructuredReader()
@@ -37,6 +35,9 @@ def load_data(data_directory):
 
     return list(doc_set.items()), list(index_set.items()), all_docs
 
+# Create a function that creates the resource
+def create_index_set_resource(data_directory):
+    return load_data(data_directory)
 
 def load_graph(data_directory):
     years = [2019, 2020, 2021, 2022]
@@ -119,8 +120,9 @@ def app():
     openai_api_key = get_openai_api_key()
 
     if openai_api_key:
+        # Use st.cache_resource to cache the resource
         data_directory = st.sidebar.text_input("Data Directory", "./data")
-        index_set = load_data(data_directory)
+        index_set = st.cache_resource("index_set", create_index_set_resource, data_directory)
 
 
     query_types = ["Risk Factors", "Significant Acquisitions"]
