@@ -1,6 +1,5 @@
 import os
 from llama_index import download_loader, GPTSimpleVectorIndex, GPTListIndex, LLMPredictor, ServiceContext, ComposableGraph
-from llama_index import OpenAI
 from pathlib import Path
 import streamlit as st
 
