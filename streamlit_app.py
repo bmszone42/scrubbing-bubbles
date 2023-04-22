@@ -1,5 +1,6 @@
 import os
 from llama_index import download_loader, GPTSimpleVectorIndex, GPTListIndex, LLMPredictor, ServiceContext, ComposableGraph
+from llama_index import OpenAI
 from pathlib import Path
 import streamlit as st
 
@@ -50,11 +51,11 @@ def risk_factors_query(index_set, year):
     
 def composable_graph_query(index_set, risk_query_str):
     years = [2022, 2021, 2020, 2019]
-    graph = ComposableGraph(index_struct=index_set[year], docstore=doc_set[year])
-   
+    graph = ComposableGraph(index_struct=index_set, docstore=doc_set)
+
     for year in years:
         graph.add_index(index_set[year], index_struct_type="dict")
-        
+
     query_configs = [
         {
             "index_struct_type": "dict",
@@ -79,18 +80,29 @@ def composable_graph_query(index_set, risk_query_str):
 def global_query(index_set, risk_query_str):
     years = [2022, 2021, 2020, 2019]
 
-    # Combine documents from all years
-    combined_docs = []
-    for year in years:
-        combined_docs.extend(index_set[year].docstore)
+    # Create a ComposableGraph from indices
+    graph = ComposableGraph.from_indices(
+        GPTListIndex,
+        [index_set[y] for y in years],
+        service_context=service_context
+    )
 
-    # Create a combined index
-    combined_index = GPTSimpleVectorIndex.from_documents(combined_docs)
+    # Save the graph to disk
+    graph.save_to_disk('10k_graph.json')
 
-    # Query the combined index
-    st.write("Response for all years combined:")
-    query_results(combined_index, None, risk_query_str)
+    # Load the graph from disk
+    graph = ComposableGraph.load_from_disk('10k_graph.json', service_context=service_context)
 
+    # Query the global index
+    response = graph.query(risk_query_str, query_configs=[{
+        "index_struct_type": "list",
+        "query_mode": "default",
+        "query_kwargs": {
+            "similarity_top_k": 4
+        }
+    }])
+
+    st.write(response)
 
 cache = {}
 
@@ -148,7 +160,12 @@ def app():
     st.header("Global Query")
     query_str = st.text_input("Global query string:", "What are some of the biggest risk factors in each year?")
     if st.button("Execute Global Query"):
-        query_results(index_set, year, query_str)
+        global_query(index_set, query_str)
+
+    # Set number of output tokens
+    llm_predictor = LLMPredictor(llm=OpenAI(temperature=0, max_tokens=512))
+    service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor)
+
 
 if __name__ == "__main__":
     app()
