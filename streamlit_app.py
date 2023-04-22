@@ -22,13 +22,11 @@ def load_data(data_directory):
     years = [2022, 2021, 2020, 2019]
     for year in years:
         year_docs = loader.load_data(file=Path(f'{data_directory}/UBER/UBER_{year}.html'), split_documents=False)
-        # insert year metadata into each year
         for d in year_docs:
             d.extra_info = {"year": year}
         doc_set[year] = year_docs
         all_docs.extend(year_docs)
 
-    # initialize simple vector indices + global vector index
     index_set = {}
     for year in years:
         cur_index = GPTSimpleVectorIndex.from_documents(doc_set[year])
@@ -36,9 +34,7 @@ def load_data(data_directory):
 
     return index_set
 
-# Create a function that creates the resource
 def create_index_set_resource(data_directory):
-#def create_index_set_resource(data_directory, arg2=None, arg3=None):
     return load_data(data_directory)
 
 def load_graph(data_directory):
@@ -52,8 +48,7 @@ def load_graph(data_directory):
     graph = ComposableGraph.load_from_disk('10k_graph.json', service_context=service_context)
     return graph
 
-def risk_factors_query(index_set, year):
-    query_str = "What are some of the biggest risk factors in each year?"
+def query_results(index_set, year, query_str):
     response = index_set[year].query(query_str, similarity_top_k=3)
     for r in response:
         st.write(r.text)
@@ -66,7 +61,6 @@ def composable_graph_query(data_directory, risk_query_str):
             "query_mode": "default",
             "query_kwargs": {
                 "similarity_top_k": 1,
-                # "include_summary": True
             }
         },
         {
@@ -85,13 +79,13 @@ def global_query(index_set, risk_query_str):
     years = [2022, 2021, 2020, 2019]
     st.write("Response for all years:")
     for year in years:
-        response = index_set[year].query(risk_query_str, similarity_top_k=4)
         st.write(f"Response for year {year}:")
-        for r in response:
-            st.write(r.text)
+        query_results(index_set, year, risk_query_str)
 
 def app():
     st.set_page_config(
+        page_title="🦙🔒🎯 L
+
     page_title="🦙🔒🎯 LlamaLock: Target Your Search with Llama-like Accuracy!",
     page_icon="🦙",
     layout="wide",
@@ -122,49 +116,32 @@ def app():
     openai_api_key = get_openai_api_key()
 
     if openai_api_key:
-        # Use st.cache_resource to cache the resource
-        data_directory = st.sidebar.text_input("Data Directory", "./data")
-        #index_set = st.cache_resource("index_set", create_index_set_resource, data_directory)
-        #index_set = st.cache_resource("index_set", create_index_set_resource, data_directory, None, None)
-        index_set = st.cache_resource("index_set", create_index_set_resource, data_directory)
+    data_directory = st.sidebar.text_input("Data Directory", "./data")
+    index_set = st.cache_resource("index_set", create_index_set_resource, data_directory)
 
+query_types = ["Risk Factors", "Significant Acquisitions"]
+query_type = st.sidebar.selectbox("Query Type", query_types)
 
+years = [2022, 2021, 2020, 2019]
+year = st.sidebar.selectbox("Year", years)
 
-    query_types = ["Risk Factors", "Significant Acquisitions"]
-    query_type = st.sidebar.selectbox("Query Type", query_types)
+if query_type == "Risk Factors":
+    query_str = "What are some of the biggest risk factors in each year?"
+elif query_type == "Significant Acquisitions":
+    query_str = "What were some of the significant acquisitions?"
 
-    years = [2022, 2021, 2020, 2019]
-    year = st.sidebar.selectbox("Year", years)
+query_results(index_set, year, query_str)
 
-    if query_type == "Risk Factors":
-        query_str = "What are some of the biggest risk factors in each year?"
-    elif query_type == "Significant Acquisitions":
-        query_str = "What were some of the significant acquisitions?"
+st.sidebar.markdown("---")
 
-    response = index_set[year].query(query_str, similarity_top_k=3)
-    for r in response:
-        st.write(r.text)
+st.sidebar.title("ComposableGraph Query")
+risk_query_str = "What are some of the biggest risk factors in each year?"
+composable_graph_query(data_directory, risk_query_str)
 
-    st.sidebar.markdown("---")
+st.sidebar.markdown("---")
 
-    st.sidebar.title("ComposableGraph Query")
-    years = [2019, 2020, 2021, 2022]
-    summary_texts = [f"UBER 10-k Filing for {year} fiscal year" for year in years]
-    llm_predictor = LLMPredictor(llm=OpenAI(temperature=0, max_tokens=512))
-    service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor)
-    index_set = load_data(data_directory)
-    graph = ComposableGraph.from_indices(GPTListIndex, [index_set[year] for year in years], summary_texts, service_context=service_context)
-    graph.save_to_disk('10k_graph.json')
-    graph = ComposableGraph.load_from_disk('10k_graph.json', service_context=service_context)
-    query_configs = get_query_configs()
-    response_summary = graph.query(RISK_QUERY_STR, query_configs=query_configs)
-    st.write(response_summary)
-    st.write(response_summary.get_formatted_sources())
-
-    st.sidebar.markdown("---")
-
-    st.sidebar.title("Global Query")
-    global_query(index_set, RISK_QUERY_STR)
+st.sidebar.title("Global Query")
+global_query(index_set, risk_query_str)
 
 if __name__ == "__main__":
     app()
