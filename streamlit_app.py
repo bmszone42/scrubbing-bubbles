@@ -13,7 +13,7 @@ def get_openai_api_key():
 
     return openai_api_key
 
-@st.cache
+@st.cache_data(allow_output_mutation=True)
 def load_data(data_directory):
     UnstructuredReader = download_loader("UnstructuredReader", refresh_cache=True)
     loader = UnstructuredReader()
@@ -116,8 +116,9 @@ def app():
     
     get_openai_api_key()
     
-    data_directory = st.sidebar.text_input("Data Directory", "./data")
-    index_set = load_data(data_directory)
+    if openai_api_key:
+        data_directory = st.sidebar.text_input("Data Directory", "./data")
+        index_set = load_data(data_directory)
 
     query_types = ["Risk Factors", "Significant Acquisitions"]
     query_type = st.sidebar.selectbox("Query Type", query_types)
