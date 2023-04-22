@@ -44,8 +44,8 @@ def app():
     initial_sidebar_state="expanded",
 )
 
-# Add some CSS to make the page title stand out
-st.markdown(
+    # Add some CSS to make the page title stand out
+    st.markdown(
     """
     <style>
     .css-1aumxhk h1{
