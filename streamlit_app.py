@@ -115,7 +115,8 @@ def app():
 
     if openai_api_key:
         data_directory = st.sidebar.text_input("Data Directory", "./data")
-        index_set = st.cache_resource("index_set", create_index_set_resource, data_directory)
+        #index_set = st.cache_resource("index_set", create_index_set_resource, data_directory)
+        index_set = st.experimental_singleton("index_set", create_index_set_resource, data_directory)
 
     query_types = ["Risk Factors", "Significant Acquisitions"]
     query_type = st.sidebar.selectbox("Query Type", query_types)
