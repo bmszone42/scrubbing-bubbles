@@ -13,6 +13,7 @@ def get_openai_api_key():
 
     return openai_api_key
 
+
 @st.cache_data()
 def load_data(data_directory):
     UnstructuredReader = download_loader("UnstructuredReader", refresh_cache=True)
@@ -114,11 +115,12 @@ def app():
 
     st.sidebar.title("🦙🔒 LlamaLock App")
     
-    get_openai_api_key()
-    
+    openai_api_key = get_openai_api_key()
+
     if openai_api_key:
         data_directory = st.sidebar.text_input("Data Directory", "./data")
         index_set = load_data(data_directory)
+
 
     query_types = ["Risk Factors", "Significant Acquisitions"]
     query_type = st.sidebar.selectbox("Query Type", query_types)
