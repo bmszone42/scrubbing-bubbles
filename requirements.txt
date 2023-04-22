@@ -3,3 +3,4 @@ langchain
 streamlit
 rich==13.0.1
 numpy==1.23.0
+gpt_index==0.4.24
