@@ -75,6 +75,13 @@ def global_query(index_set, risk_query_str):
         st.write(f"Response for year {year}:")
         query_results(index_set, year, risk_query_str)
 
+cache = {}
+
+def get_index_set(data_directory):
+    if "index_set" not in cache:
+        cache["index_set"] = load_data(data_directory)
+    return cache["index_set"]
+
 def app():
     st.set_page_config(
     page_title="🦙🔒🎯 LlamaLock: Target Your Search with Llama-like Accuracy!",
@@ -108,9 +115,7 @@ def app():
 
     if openai_api_key:
         data_directory = st.sidebar.text_input("Data Directory", "./data")
-        index_set = st.cache_resource("index_set", create_index_set_resource, data_directory)
-    else:
-        index_set = None
+        index_set = get_index_set(data_directory)
 
     years = [2022, 2021, 2020, 2019]
     year = st.sidebar.selectbox("Year", years)
