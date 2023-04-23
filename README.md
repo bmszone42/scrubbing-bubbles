@@ -6,8 +6,8 @@ To use this app, please ensure that you have the following installed on your mac
 
 Python 3.6 or higher
 pip package manager
-To install the required dependencies, run the following command in your terminal:
 
+To install the required dependencies, run the following command in your terminal:
 pip install -r requirements.txt
 
 Usage
