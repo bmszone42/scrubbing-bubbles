@@ -1,4 +1,5 @@
 LlamaLock App
+LlamaLock App
 Welcome to LlamaLock, a powerful tool for searching and analyzing 10-K financial reports. This app allows you to perform searches and queries on a set of financial reports from the ride-sharing company Uber.
 
 Installation and Setup
@@ -6,12 +7,8 @@ To use this app, please ensure that you have the following installed on your mac
 
 Python 3.6 or higher
 pip package manager
-
 To install the required dependencies, run the following command in your terminal:
-pip install -r requirements.txt
 
-Usage
-To launch the LlamaLock app, run the following command in your terminal:
 
 streamlit run app.py
 
