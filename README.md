@@ -1,41 +1,44 @@
-LlamaLock App
-LlamaLock App
-Welcome to LlamaLock, a powerful tool for searching and analyzing 10-K financial reports. This app allows you to perform searches and queries on a set of financial reports from the ride-sharing company Uber.
+# 🦙🔒🎯 LlamaLock: Target Your Search with Llama-like Accuracy!
 
-Installation and Setup
-To use this app, please ensure that you have the following installed on your machine:
+This app allows you to search through UBER's 10-K reports from 2019 to 2022, providing summaries of risk factors for each year. It utilizes the Llama Index library, which includes the GPTSimpleVectorIndex and GPTListIndex for indexing the documents, and ComposableGraph for querying the indices.
 
-Python 3.6 or higher
-pip package manager
-To install the required dependencies, run the following command in your terminal:
+## Table of Contents
+1. [Installation](#installation)
+2. [Usage](#usage)
+3. [Dependencies](#dependencies)
+4. [License](#license)
 
+## Installation
 
+To install the required dependencies, run:
+
+\`\`\`
+pip install -r requirements.txt
+\`\`\`
+
+## Usage
+
+1. Run the app with:
+
+\`\`\`bash
 streamlit run app.py
+\`\`\`
 
-This will open the app in your web browser.
+2. Enter your OpenAI API Key in the sidebar.
 
-Once the app is running, you will be prompted to enter your OpenAI API key in the sidebar. Please enter your API key and click "Enter".
+3. Set the data directory (default: "./data").
 
-Next, you will need to specify the location of the data directory containing the Uber 10-K reports. You can do this by entering the path to the directory in the "Data Directory" field in the sidebar.
+4. Select a year from the sidebar.
 
-Once you have specified the data directory, you can use the app to perform searches and queries on the 10-K reports.
+5. View the Risk Factors Query results, Composable Graph Query results, and Global Query results.
 
-Risk Factors Query
-The "Risk Factors Query" section allows you to search for descriptions of current risk factors. To perform a risk factors query, select the year of the report you wish to search and click "Search". The app will return a list of the top 3 most similar documents to your query.
+## Dependencies
 
-Composable Graph Query
-The "Composable Graph Query" section allows you to perform more complex searches and queries using the ComposableGraph class from the llama_index library. To perform a composable graph query, enter your query string in the "Composable graph query string" field and click "Execute Composable Graph Query". The app will return a summary of the query results, as well as a formatted list of the sources of the documents returned.
+- streamlit
+- openai
+- llama_index
+- langchain
 
-Global Query
-The "Global Query" section allows you to search across all available years of the 10-K reports. To perform a global query, enter your query string in the "Global query string" field and click "Execute Global Query". The app will return a list of the top 4 most similar documents to your query.
+## License
 
-Limitations
-Please note that the LlamaLock app is designed to work with a specific set of 10-K reports from the ride-sharing company Uber. The app may not function correctly if used with other datasets.
-
-Additionally, the LlamaLock app relies on the OpenAI GPT-3.5 language model and the llama_index library to perform its searches and queries. As such, the app's performance may be affected by changes to these libraries.
-
-Support
-If you encounter any issues while using the LlamaLock app, please feel free to open an issue on the project's GitHub page: https://github.com/llamalock/llamalock-app.
-
-Acknowledgments
-The LlamaLock app was created as part of the OpenAI API hackathon. We would like to thank OpenAI for providing access to their GPT-3.5 language model, as well as the creators of the llama_index library for their work on developing powerful search tools for natural language data.
+This project is licensed under the MIT License.
